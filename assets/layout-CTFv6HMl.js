@@ -77,7 +77,7 @@ import{k as m,a as r,c as u,n as v,g}from"./index-49v1tazL.js";function p(){r("g
 
       <div style="padding:12px 20px;border-top:1px solid rgba(255,255,255,0.12);font-size:0.75rem;color:rgba(255,255,255,0.4)">
         v2.0<br>
-        <a href="https://instagram.com/rian_themaster" target="_blank" style="color:rgba(255,255,255,0.4);text-decoration:none">@rian_themaster</a>
+        <a href="https://instagram.com/siridwan11" target="_blank" style="color:rgba(255,255,255,0.4);text-decoration:none">@ dkm al-islah 2026</a>
       </div>
     </aside>
 
