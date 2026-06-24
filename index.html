@@ -91,6 +91,36 @@
 
   <!-- App -->
 
+  <script>
+  // Fungsi untuk menentukan halaman apa yang dibuka
+  function loadPage() {
+    const path = window.location.pathname; // Contoh: "/login" atau "/setup"
+    console.log("Halaman yang dibuka:", path);
+
+    if (path === "/login") {
+       // Panggil fungsi GAS untuk render halaman login
+       panggilGAS("login");
+    } else if (path === "/setup") {
+       panggilGAS("setup");
+    }
+  }
+
+  // Fungsi untuk memanggil Google Apps Script
+  function panggilGAS(namaHalaman) {
+    // GANTI URL DI BAWAH INI dengan URL Web App GAS Anda (yang akhiran /exec)
+    const URL_GAS = "https://script.google.com/macros/s/AKfycbw_f2i4iWTTCl7QSQMFn-HV89zehToIwx7sQxx6rA5Ld9oHK5ZvqTBg-wm59Wh1Ulg4yw/exec";
+
+    fetch(URL_GAS + "?page=" + namaHalaman)
+      .then(res => res.text())
+      .then(data => {
+        document.getElementById("contentArea").innerHTML = data;
+      });
+  }
+
+  // Jalankan fungsi saat web dibuka
+  window.onload = loadPage;
+</script>
+  
 </body>
 
 </html>
