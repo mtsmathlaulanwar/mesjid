@@ -104,7 +104,7 @@ import{k as m,a as o,c as v,n as u,g as p}from"./index-DWj9LPsn.js";function g()
 
       <div style="padding:12px 20px;border-top:1px solid rgba(255,255,255,0.12);font-size:0.75rem;color:rgba(255,255,255,0.4)">
         v2.0<br>
-        <a href="https://instagram.com/siridwan11" target="_blank" style="color:rgba(255,255,255,0.4);text-decoration:none">@dkm_al-islah</a>
+        <a href="https://instagram.com/siridwan11" target="_blank" style="color:rgba(255,255,255,0.4);text-decoration:none">@ dkm al-islah</a>
       </div>
     </aside>
 
