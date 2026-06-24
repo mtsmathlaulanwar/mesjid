@@ -104,7 +104,7 @@ import{a as h,g as v}from"./index-49v1tazL.js";let p={};function x(){return`
       <div style="border-top:1px solid rgba(255,255,255,.1)">
         <div class="container py-3 d-flex justify-content-between align-items-center flex-wrap" style="gap:8px">
           <small style="color:rgba(255,255,255,.4)">&copy; ${new Date().getFullYear()} <span id="footerCopyName">Masjid</span>. All rights reserved.</small>
-          <small><a href="https://instagram.com/siridwan11" target="_blank" style="color:rgba(255,255,255,.35);text-decoration:none">@dkm al-islah 2026</a></small>
+          <small><a href="https://instagram.com/siridwan11" target="_blank" style="color:rgba(255,255,255,.35);text-decoration:none">@ dkm al-islah 2026</a></small>
         </div>
       </div>
     </footer>
