@@ -129,8 +129,17 @@ function p(s) {
         return;
       }
       
-      d("saveKomentar", {}, { berita_id: a, nama: i, email: m, komentar: l }).then(function() {
-        n("Komentar terkirim! Menunggu persetujuan admin.");
+      // Kita tambahkan status: "approved" atau status: 1 di dalam pengiriman data
+d("saveKomentar", {}, { 
+    berita_id: a, 
+    nama: i, 
+    email: m, 
+    komentar: l,
+    status: "approved", // Coba tambahkan baris ini
+}).then(function() {
+    n("Komentar berhasil dikirim!");
+    // ... sisa kode lainnya
+})
         document.getElementById("komNama").value = "";
         document.getElementById("komEmail").value = "";
         document.getElementById("komIsi").value = "";
