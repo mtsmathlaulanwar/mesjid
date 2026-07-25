@@ -129,18 +129,8 @@ function p(s) {
         return;
       }
       
-      // Kita tambahkan status: "approved" atau status: 1 di dalam pengiriman data
-d("saveKomentar", {}, { 
-    berita_id: a, 
-    nama: i, 
-    email: m, 
-    komentar: l,
-    status: "approved", // Coba tambahkan baris ini
-    is_approved: 1      // Atau tambahkan baris ini (tergantung sistem database Anda)
-}).then(function() {
-    n("Komentar berhasil dikirim!");
-    // ... sisa kode lainnya
-})
+      d("saveKomentar", {}, { berita_id: a, nama: i, email: m, komentar: l }).then(function() {
+        n("Komentar terkirim! Menunggu persetujuan admin.");
         document.getElementById("komNama").value = "";
         document.getElementById("komEmail").value = "";
         document.getElementById("komIsi").value = "";
