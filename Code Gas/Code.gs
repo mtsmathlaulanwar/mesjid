@@ -73,6 +73,11 @@ function handleRequest_(e) {
       case 'saveKomentar':
         result = { status: 'success', data: saveKomentar(postData) };
         break;
+      // ---> TAMBAHKAN KODE INI:
+      case 'getKomentarByBerita':
+        result = { status: 'success', data: getKomentarByBerita(params.beritaId || params.id) };
+        break;
+      // <--- SAMPAI SINI
 
       // === PUBLIC: KATEGORI ===
       case 'getKategoriList':
