@@ -172,9 +172,20 @@ function f(t) {
   var i = g(),
       rawKonten = $("#konten").summernote("code");
 
-  // ---> AUTO-CONVERT LINK YOUTUBE MENJADI IFRAME EMBED <---
-  var ytRegex = /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/watch\?v=|youtu\.be\/)([a-zA-Z0-9_-]{11})/g;
-  var cleanKonten = rawKonten.replace(ytRegex, function(match, videoId) {
+  // ---> PERBAIKAN: AUTO-CONVERT BERBAGAI JENIS LINK YOUTUBE <---
+  var cleanKonten = rawKonten;
+  
+  // Deteksi link di dalam tag <a>
+  var aTagRegex = /<a[^>]*href="[^"]*(?:youtube\.com\/watch\?v=|youtu\.be\/)([a-zA-Z0-9_-]{11})"[^>]*>.*?<\/a>/gi;
+  cleanKonten = cleanKonten.replace(aTagRegex, function(match, videoId) {
+    return `<div style="position:relative;padding-bottom:56.25%;height:0;overflow:hidden;margin:15px 0;border-radius:12px;">
+              <iframe style="position:absolute;top:0;left:0;width:100%;height:100%;border:0;" src="https://www.youtube.com/embed/${videoId}" allowfullscreen></iframe>
+            </div>`;
+  });
+
+  // Deteksi link berupa teks mentah
+  var textRegex = /(?<!["'=\/])(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/watch\?v=|youtu\.be\/)([a-zA-Z0-9_-]{11})(?!["'])/g;
+  cleanKonten = cleanKonten.replace(textRegex, function(match, videoId) {
     return `<div style="position:relative;padding-bottom:56.25%;height:0;overflow:hidden;margin:15px 0;border-radius:12px;">
               <iframe style="position:absolute;top:0;left:0;width:100%;height:100%;border:0;" src="https://www.youtube.com/embed/${videoId}" allowfullscreen></iframe>
             </div>`;

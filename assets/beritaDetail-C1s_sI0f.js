@@ -15,24 +15,35 @@ function v() {
   `;
 }
 
-// Fungsi bantu untuk merapikan iframe & mengubah link youtube biasa jadi embed responsif
+// Fungsi bantu untuk merapikan iframe & mengubah link youtube menjadi embed dinamis
 function formatKontenVideo(konten) {
   if (!konten) return "";
   let formatted = konten;
-  // 1. Ubah link youtube mentah menjadi iframe embed otomatis
-  const ytRegex = /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/watch\?v=|youtu\.be\/)([a-zA-Z0-9_-]{11})/g;
-  formatted = formatted.replace(ytRegex, function(match, videoId) {
+  
+  // 1. Tangkap link YouTube yang sudah diubah menjadi teks link (tag <a>) oleh text editor
+  const aTagRegex = /<a[^>]*href="[^"]*(?:youtube\.com\/watch\?v=|youtu\.be\/)([a-zA-Z0-9_-]{11})"[^>]*>.*?<\/a>/gi;
+  formatted = formatted.replace(aTagRegex, function(match, videoId) {
     return `<div style="position:relative;padding-bottom:56.25%;height:0;overflow:hidden;margin:15px 0;border-radius:12px;">
               <iframe style="position:absolute;top:0;left:0;width:100%;height:100%;border:0;" src="https://www.youtube.com/embed/${videoId}" allowfullscreen></iframe>
             </div>`;
   });
-  // 2. Pastikan iframe dari summernote otomatis 100% dan responsif (tidak tinggi 0)
+
+  // 2. Tangkap link YouTube yang berupa teks biasa (berjaga-jaga jika bukan tag <a>)
+  const textRegex = /(?<!["'=\/])(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/watch\?v=|youtu\.be\/)([a-zA-Z0-9_-]{11})(?!["'])/g;
+  formatted = formatted.replace(textRegex, function(match, videoId) {
+    return `<div style="position:relative;padding-bottom:56.25%;height:0;overflow:hidden;margin:15px 0;border-radius:12px;">
+              <iframe style="position:absolute;top:0;left:0;width:100%;height:100%;border:0;" src="https://www.youtube.com/embed/${videoId}" allowfullscreen></iframe>
+            </div>`;
+  });
+
+  // 3. Pastikan iframe bawaan otomatis 100% dan responsif
   formatted = formatted.replace(/<iframe(?:[^>]*src="[^"]*")[^>]*>/gi, function(iframeTag) {
     if (iframeTag.includes('position:absolute')) return iframeTag;
     return `<div style="position:relative;padding-bottom:56.25%;height:0;overflow:hidden;margin:15px 0;border-radius:12px;">
               ` + iframeTag.replace(/width="[^"]*"/i, 'width="100%"').replace(/height="[^"]*"/i, 'height="100%"').replace(/style="[^"]*"/i, 'style="position:absolute;top:0;left:0;width:100%;height:100%;border:0;"') + `
             </div>`;
   });
+
   return formatted;
 }
 
