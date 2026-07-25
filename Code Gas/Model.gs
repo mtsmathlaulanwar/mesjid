@@ -180,12 +180,28 @@ function deleteKategori(id) {
 
 // ==================== KOMENTAR MODEL ====================
 
+/**
+ * Mengambil daftar komentar yang sudah disetujui untuk berita tertentu.
+ * @param {string|number} beritaId - ID Berita yang ingin diambil komentarnya.
+ * @returns {Array} List komentar berstatus approved yang sudah diurutkan dari yang terbaru.
+ */
 function getKomentarByBerita(beritaId) {
   const config = getConfig();
   const sheet = getSheet_(config.SHEET_BERITA_ID, 'Komentar');
   if (!sheet) return [];
+
   return sheetToObjects_(sheet)
-    .filter(k => String(k.berita_id) === String(beritaId) && k.status === 'approved')
+    .filter(k => {
+      // 1. Samakan tipe data berita_id menjadi String dan bersihkan spasi
+      const matchBerita = String(k.berita_id || '').trim() === String(beritaId || '').trim();
+      
+      // 2. Ubah status ke huruf kecil semua dan bersihkan spasi agar aman
+      const statusStr = String(k.status || '').toLowerCase().trim();
+      const isApproved = statusStr === 'approved' || statusStr === 'true' || k.status === true;
+      
+      // Hanya ambil data jika ID berita cocok DAN statusnya sudah approved
+      return matchBerita && isApproved;
+    })
     .sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
 }
 
