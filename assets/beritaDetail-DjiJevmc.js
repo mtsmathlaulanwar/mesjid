@@ -1,6 +1,11 @@
 import { a as d, e as o, d as n } from "./index-DWj9LPsn.js";
+
 var b = "Detail Berita";
 
+/**
+ * Membuat kerangka tampilan utama halaman detail berita
+ * @returns {string} String HTML kerangka
+ */
 function v() {
   return `
     <div class="section-block">
@@ -15,12 +20,16 @@ function v() {
   `;
 }
 
-// Fungsi bantu untuk merapikan iframe & mengubah link youtube menjadi embed dinamis
+/**
+ * Merapikan format video/iframe dari YouTube agar tampil responsif
+ * @param {string} konten - Teks HTML isi berita
+ * @returns {string} HTML yang sudah diformat videonya
+ */
 function formatKontenVideo(konten) {
   if (!konten) return "";
   let formatted = konten;
   
-  // 1. Tangkap link YouTube yang sudah diubah menjadi teks link (tag <a>) oleh text editor
+  // 1. Mengubah link YouTube berformat tag <a href="..."> menjadi embed iframe
   const aTagRegex = /<a[^>]*href="[^"]*(?:youtube\.com\/watch\?v=|youtu\.be\/)([a-zA-Z0-9_-]{11})"[^>]*>.*?<\/a>/gi;
   formatted = formatted.replace(aTagRegex, function(match, videoId) {
     return `<div style="position:relative;padding-bottom:56.25%;height:0;overflow:hidden;margin:15px 0;border-radius:12px;">
@@ -28,7 +37,7 @@ function formatKontenVideo(konten) {
             </div>`;
   });
 
-  // 2. Tangkap link YouTube yang berupa teks biasa (berjaga-jaga jika bukan tag <a>)
+  // 2. Mengubah link YouTube teks biasa menjadi embed iframe
   const textRegex = /(?<!["'=\/])(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/watch\?v=|youtu\.be\/)([a-zA-Z0-9_-]{11})(?!["'])/g;
   formatted = formatted.replace(textRegex, function(match, videoId) {
     return `<div style="position:relative;padding-bottom:56.25%;height:0;overflow:hidden;margin:15px 0;border-radius:12px;">
@@ -36,7 +45,7 @@ function formatKontenVideo(konten) {
             </div>`;
   });
 
-  // 3. Pastikan iframe bawaan otomatis 100% dan responsif
+  // 3. Memastikan iframe bawaan editor berukuran 100% responsif
   formatted = formatted.replace(/<iframe(?:[^>]*src="[^"]*")[^>]*>/gi, function(iframeTag) {
     if (iframeTag.includes('position:absolute')) return iframeTag;
     return `<div style="position:relative;padding-bottom:56.25%;height:0;overflow:hidden;margin:15px 0;border-radius:12px;">
@@ -47,18 +56,24 @@ function formatKontenVideo(konten) {
   return formatted;
 }
 
+/**
+ * Inisialisasi halaman detail berita, mengambil data dari API, dan menampilkan komentar
+ * @param {Object} s - Parameter halaman (berisi slug berita)
+ */
 function p(s) {
   if (!s || !s.slug) {
     document.getElementById("beritaDetailContent").innerHTML = '<p class="text-center text-danger">Berita tidak ditemukan.</p>';
     return;
   }
   
+  // Mengambil data berita berdasarkan slug
   d("getBeritaBySlug", { slug: s.slug }).then(function(e) {
     if (!e) {
       document.getElementById("beritaDetailContent").innerHTML = '<p class="text-center text-danger">Berita tidak ditemukan.</p>';
       return;
     }
     
+    // Menyusun tampilan detail berita
     var t = '<a href="/berita" class="btn btn-sm btn-outline-secondary mb-3"><i class="bi bi-arrow-left me-1"></i>Kembali</a>';
     t += '<div class="news-detail-card" style="background:var(--bg-card);border:1px solid var(--border-color);border-radius:16px;overflow:hidden">';
     if (e.thumbnail) {
@@ -73,7 +88,6 @@ function p(s) {
     t += '<span><i class="bi bi-heart me-1"></i><span id="likeCount">' + (e.likes || 0) + '</span> likes</span>';
     t += '</div>';
     
-    // PEMANGGILAN FORMATTER VIDEO:
     t += '<div class="berita-content" style="line-height:1.8;font-size:.95rem">' + formatKontenVideo(e.konten) + '</div>';
     
     t += '<div class="d-flex gap-2 mt-4">';
@@ -81,6 +95,7 @@ function p(s) {
     t += '</div>';
     t += '</div></div>';
     
+    // Menyusun wadah daftar komentar dan form kirim komentar
     t += '<div class="mt-4" style="background:var(--bg-card);border:1px solid var(--border-color);border-radius:16px;padding:24px">';
     t += '<h6 class="fw-bold mb-3"><i class="bi bi-chat-dots me-2"></i>Komentar</h6>';
     t += '<div id="komentarList" class="mb-3"><p class="text-muted small">Memuat komentar...</p></div>';
@@ -92,15 +107,25 @@ function p(s) {
     
     document.getElementById("beritaDetailContent").innerHTML = t;
     
-    // ---> PERBAIKAN 1: Panggil API getKomentarByBerita agar komentar muncul! <---
+    // =========================================================
+    // PROSES MENGAMBIL DAN MENAMPILKAN KOMENTAR PUBLIK
+    // =========================================================
     d("getKomentarByBerita", { beritaId: e.id }).then(function(resKom) {
+      // Memastikan format data yang diterima baik berupa Array langsung atau di dalam resKom.data
       var listKom = Array.isArray(resKom) ? resKom : (resKom && resKom.data ? resKom.data : []);
+      
       if (listKom.length > 0) {
-        var r = "";
-        listKom.forEach(function(a) {
-          r += '<div class="mb-3 pb-3 border-bottom"><div class="d-flex justify-content-between"><strong class="small">' + (a.nama || "Anonim") + '</strong><small class="text-muted">' + o(a.created_at) + '</small></div><p class="mb-0 small mt-1">' + a.komentar + '</p></div>';
+        var htmlKomentar = "";
+        listKom.forEach(function(item) {
+          htmlKomentar += '<div class="mb-3 pb-3 border-bottom">';
+          htmlKomentar += '<div class="d-flex justify-content-between">';
+          htmlKomentar += '<strong class="small">' + (item.nama || "Anonim") + '</strong>';
+          htmlKomentar += '<small class="text-muted">' + o(item.created_at) + '</small>';
+          htmlKomentar += '</div>';
+          htmlKomentar += '<p class="mb-0 small mt-1">' + item.komentar + '</p>';
+          htmlKomentar += '</div>';
         });
-        document.getElementById("komentarList").innerHTML = r;
+        document.getElementById("komentarList").innerHTML = htmlKomentar;
       } else {
         document.getElementById("komentarList").innerHTML = '<p class="text-muted small">Belum ada komentar.</p>';
       }
@@ -108,39 +133,39 @@ function p(s) {
       document.getElementById("komentarList").innerHTML = '<p class="text-muted small">Belum ada komentar.</p>';
     });
     
-    // Event listener tombol Like
+    // Listener untuk tombol Suka (Like)
     document.getElementById("btnLike").addEventListener("click", function() {
-      var a = this.dataset.id;
-      d("likeBerita", {}, { id: a }).then(function(i) {
-        document.getElementById("likeCount").textContent = i.likes || parseInt(document.getElementById("likeCount").textContent) + 1;
+      var beritaId = this.dataset.id;
+      d("likeBerita", {}, { id: beritaId }).then(function(resLike) {
+        document.getElementById("likeCount").textContent = resLike.likes || parseInt(document.getElementById("likeCount").textContent) + 1;
         n("Terima kasih!");
       }).catch(function() {});
     });
     
-    // Event listener tombol Kirim Komentar
+    // Listener untuk tombol Kirim Komentar
     document.getElementById("btnKomentar").addEventListener("click", function() {
-      var a = this.dataset.beritaId,
-          i = document.getElementById("komNama").value.trim(),
-          m = document.getElementById("komEmail").value.trim(),
-          l = document.getElementById("komIsi").value.trim();
+      var beritaId = this.dataset.beritaId,
+          nama = document.getElementById("komNama").value.trim(),
+          email = document.getElementById("komEmail").value.trim(),
+          isi = document.getElementById("komIsi").value.trim();
           
-      if (!i || !l) {
+      if (!nama || !isi) {
         n("Nama dan komentar wajib diisi!", "warning");
         return;
       }
       
-      d("saveKomentar", {}, { berita_id: a, nama: i, email: m, komentar: l }).then(function() {
+      d("saveKomentar", {}, { berita_id: beritaId, nama: nama, email: email, komentar: isi }).then(function() {
         n("Komentar terkirim! Menunggu persetujuan admin.");
         document.getElementById("komNama").value = "";
         document.getElementById("komEmail").value = "";
         document.getElementById("komIsi").value = "";
-      }).catch(function(c) {
-        n("Gagal: " + c.message, "error");
+      }).catch(function(err) {
+        n("Gagal: " + err.message, "error");
       });
     });
     
-  }).catch(function(e) {
-    document.getElementById("beritaDetailContent").innerHTML = '<p class="text-center text-danger">Gagal memuat berita: ' + e.message + '</p>';
+  }).catch(function(err) {
+    document.getElementById("beritaDetailContent").innerHTML = '<p class="text-center text-danger">Gagal memuat berita: ' + err.message + '</p>';
   });
 }
 
