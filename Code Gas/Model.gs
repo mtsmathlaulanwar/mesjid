@@ -181,26 +181,45 @@ function deleteKategori(id) {
 // ==================== KOMENTAR MODEL ====================
 
 /**
- * Mengambil daftar komentar yang sudah disetujui untuk berita tertentu.
- * @param {string|number} beritaId - ID Berita yang ingin diambil komentarnya.
- * @returns {Array} List komentar berstatus approved yang sudah diurutkan dari yang terbaru.
+ * Mengambil daftar komentar yang approved berdasarkan beritaId atau Slug berita.
+ * @param {string|number} beritaIdOrSlug - ID atau Slug berita yang dicari.
+ * @returns {Array} List komentar yang berstatus approved.
  */
-function getKomentarByBerita(beritaId) {
-  const config = getConfig();
-  const sheet = getSheet_(config.SHEET_BERITA_ID, 'Komentar');
-  if (!sheet) return [];
+function getKomentarByBerita(beritaIdOrSlug) {
+  if (!beritaIdOrSlug) return [];
 
-  return sheetToObjects_(sheet)
+  const config = getConfig();
+  const sheetKomentar = getSheet_(config.SHEET_BERITA_ID, 'Komentar');
+  if (!sheetKomentar) return [];
+
+  let targetId = String(beritaIdOrSlug).trim();
+
+  // 1. CARI ID ASLI JIKA PARAMETER BERUPA SLUG BERITA
+  const sheetBerita = getSheet_(config.SHEET_BERITA_ID, 'Berita');
+  if (sheetBerita) {
+    const dataBerita = sheetToObjects_(sheetBerita);
+    const foundBerita = dataBerita.find(b => 
+      String(b.slug || '').trim() === targetId || 
+      String(b.id || '').trim() === targetId
+    );
+    if (foundBerita && foundBerita.id) {
+      targetId = String(foundBerita.id).trim(); // Gunakan ID berita asli
+    }
+  }
+
+  // 2. FILTER KOMENTAR BERDASARKAN TARGET ID ATAU SLUG
+  return sheetToObjects_(sheetKomentar)
     .filter(k => {
-      // 1. Samakan tipe data berita_id menjadi String dan bersihkan spasi
-      const matchBerita = String(k.berita_id || '').trim() === String(beritaId || '').trim();
+      const kBeritaId = String(k.berita_id || '').trim();
       
-      // 2. Ubah status ke huruf kecil semua dan bersihkan spasi agar aman
+      // Cek apakah ID Komentar cocok dengan ID Berita asli ATAU Slug
+      const isMatchBerita = (kBeritaId === targetId) || (kBeritaId === String(beritaIdOrSlug).trim());
+      
+      // Cek status approved (bebas spasi dan huruf besar/kecil)
       const statusStr = String(k.status || '').toLowerCase().trim();
       const isApproved = statusStr === 'approved' || statusStr === 'true' || k.status === true;
-      
-      // Hanya ambil data jika ID berita cocok DAN statusnya sudah approved
-      return matchBerita && isApproved;
+
+      return isMatchBerita && isApproved;
     })
     .sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
 }
