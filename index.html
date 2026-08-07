@@ -108,7 +108,7 @@
   // Fungsi untuk memanggil Google Apps Script
   function panggilGAS(namaHalaman) {
     // GANTI URL DI BAWAH INI dengan URL Web App GAS Anda (yang akhiran /exec)
-    const URL_GAS = "https://script.google.com/macros/s/AKfycbwNVrEahPjZxdJ8HnfONaA5Rf0cUvdLyNZaLhc9j23NsGDFzSh25EqSe9Xn0PfsrD80rA/exec";
+    const URL_GAS = "https://script.google.com/macros/s/AKfycbzSWIQBCyK3HlI4JNpdJfjtKodDIZ40wsbMxVtvqwyG5ISb7frfEfYl72swZefSdl5Z/exec";
 
     fetch(URL_GAS + "?page=" + namaHalaman)
       .then(res => res.text())
